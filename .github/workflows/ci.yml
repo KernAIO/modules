@@ -38,3 +38,5 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build
+      # a module publishes its client as source; make sure the tarball can actually resolve it
+      - run: pnpm check:pack

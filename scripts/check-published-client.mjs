@@ -27,9 +27,7 @@ function unresolvedFrom(entry, packageRoot) {
     for (const [, spec] of readFileSync(file, 'utf8').matchAll(/from '([^']+)'/g)) {
       if (!spec.startsWith('.')) continue
       const base = resolve(dirname(file), spec.replace(/\.js$/, ''))
-      const hit = CANDIDATE_SUFFIXES.map((s) => base + s).find(
-        (p) => existsSync(p) && statSync(p).isFile(),
-      )
+      const hit = CANDIDATE_SUFFIXES.map((s) => base + s).find((p) => existsSync(p) && statSync(p).isFile())
       if (hit) visit(hit)
       else missing.push(`${relative(packageRoot, file)} → ${spec}`)
     }
@@ -60,7 +58,10 @@ for (const name of packages) {
   const out = mkdtempSync(join(tmpdir(), 'kern-pack-'))
   try {
     execFileSync('npm', ['pack', '--pack-destination', out], { cwd: dir, stdio: 'pipe' })
-    const tarball = join(out, readdirSync(out).find((f) => f.endsWith('.tgz')))
+    const tarball = join(
+      out,
+      readdirSync(out).find((f) => f.endsWith('.tgz')),
+    )
     execFileSync('tar', ['xzf', tarball, '-C', out])
     const root = join(out, 'package')
     const declared = clientEntryOf(pkg)

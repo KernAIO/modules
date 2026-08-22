@@ -15,7 +15,8 @@
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "changeset": "changeset",
-    "release": "pnpm build && changeset publish"
+    "release": "pnpm build && changeset publish",
+    "check:pack": "node scripts/check-published-client.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.0",

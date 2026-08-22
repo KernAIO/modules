@@ -32,6 +32,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+          # Runs queue rather than cancel, so a second push can start from a checkout that predates
+          # the previous run's version commit — and then try to publish a version that already
+          # exists. Take whatever landed while we waited.
+          git pull --rebase origin "$GITHUB_REF_NAME"
+
           # Bump only when something asked to be bumped. `changeset publish` still runs either way:
           # it compares each package against the registry, which is what gets a package that has
           # never been released out for the first time.
