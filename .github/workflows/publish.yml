@@ -1,7 +1,10 @@
 name: Publish packages
 on:
   push: { branches: [main] }
-permissions: { contents: write, id-token: write, pull-requests: write }
+permissions: { contents: write, id-token: write }
+concurrency:
+  group: "publish-${{ github.ref }}"
+  cancel-in-progress: false
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -10,15 +13,32 @@ jobs:
         with: { fetch-depth: 0 }
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 24, registry-url: https://registry.npmjs.org }
+        with: { node-version: 24 }
       - run: if [ -f pnpm-lock.yaml ]; then pnpm install --frozen-lockfile; else pnpm install; fi
       - run: pnpm build
-      - name: Version or publish
-        uses: changesets/action@v1
-        with:
-          publish: pnpm changeset publish
-          title: 'chore: version packages'
+
+      # Version and publish straight from `main` rather than through a release pull request:
+      # the organisation does not let Actions open pull requests, and a release PR would be a
+      # formality for a repository whose changesets are written alongside the change anyway.
+      - name: Release what the changesets describe
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "$(find .changeset -name '*.md' ! -name 'README.md' -print -quit)" ]; then
+            echo "No changesets, so nothing to release."
+            exit 0
+          fi
+          if [ -z "${NPM_TOKEN:-}" ]; then
+            echo "::error::NPM_TOKEN is not set, so the packages cannot be published."
+            exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          pnpm changeset version
+          if [ -f pnpm-lock.yaml ]; then pnpm install --lockfile-only; fi
+          git add -A
+          git commit -m "chore: version packages"
+          npm config set "//registry.npmjs.org/:_authToken=$NPM_TOKEN"
+          pnpm changeset publish
+          git push origin "HEAD:${GITHUB_REF_NAME}" --follow-tags
