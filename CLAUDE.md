@@ -28,3 +28,33 @@ The repositories are **public**, so every commit is visible the moment it is pus
 - `pnpm typecheck && pnpm lint && pnpm test && pnpm build` must pass before pushing.
 - UI follows `app/DESIGN.md` (Ink/paper design system) and must work in RTL (fa/ar) and dark mode.
 - All user-facing strings go through i18n (Paraglide) — no hardcoded English in components.
+
+## Keeping this file current
+This file is how the next person — or the next agent — avoids repeating what we already worked out.
+When you learn something durable, add it here **in the same commit as the change that taught you**:
+- a trap that cost you time (a silent failure, a misleading error, a tool that lies about success)
+- a convention you had to infer from reading several files
+- a decision and the reason behind it, especially where the obvious choice is wrong
+Keep it specific and short. Delete anything that stops being true — a stale note is worse than none.
+
+---
+
+# This repository: modules (first-party feature modules)
+
+Every feature ships as a module: `@kernhq/module-chat`, `-mail`, `-tracker`, plus `@kernhq/workflow`
+(the reusable state machine) and `packages/_template` to copy from.
+
+**Things worth knowing**
+- A module has three entry points: `./contract` (Zod + oRPC, no runtime), `./server`
+  (`defineServerModule`: schema, migrations, router, procedures, jobs, subscriptions, search, resolvers)
+  and `./client` (`defineClientModule`: nav, routes, commands, presenters, slots).
+- A module owns its data in its **own Postgres schema** (`mod_<id>`) with `workspace_id` and RLS on
+  every tenant table. Cross-module access goes through `kernel.call()` and events — never a join across
+  schemas.
+- Generated migrations must use `CREATE SCHEMA IF NOT EXISTS`: the kernel creates the schema before
+  running them, so the bare form fails on boot.
+- The client is published as **source**, not compiled: consumers build the Svelte components with their
+  own toolchain, so `tsconfig` excludes `src/client`.
+- `@kernhq/workflow`'s registry uses `any` deliberately — it holds rules whose config types differ, and
+  `unknown` would break variance. The reasoning is at the top of `src/registry.ts`; each rule validates
+  its own config with Zod before it runs.
