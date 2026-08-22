@@ -24,8 +24,7 @@ interface Leaf {
     middlewares?: unknown[]
   }
 }
-const isLeaf = (node: unknown): node is Leaf =>
-  typeof node === 'object' && node !== null && '~orpc' in node
+const isLeaf = (node: unknown): node is Leaf => typeof node === 'object' && node !== null && '~orpc' in node
 
 /** `{ widgets: { list, create } }` → `{ 'widgets.list': leaf, 'widgets.create': leaf }` */
 function leaves(node: unknown, path: string[] = []): Record<string, Leaf> {
@@ -75,8 +74,6 @@ describe('the module declares what it uses', () => {
     expect(templateModule.definition.id).toBe(MODULE_ID)
     expect(templateModule.definition.permissions).toBe(templatePermissions)
     expect(templateModule.definition.events).toBe(templateEvents)
-    expect(templateModule.router, 'a module with a contract has to mount a router').toBeTypeOf(
-      'function',
-    )
+    expect(templateModule.router, 'a module with a contract has to mount a router').toBeTypeOf('function')
   })
 })
