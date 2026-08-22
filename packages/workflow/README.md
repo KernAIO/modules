@@ -1,4 +1,4 @@
-# @kernalo/workflow
+# @kernaio/workflow
 
 Generic, pure-TypeScript workflow / state-machine engine used by Kern modules (Tracker issues, HR leave
 requests, Recruiting pipelines, CRM deals). It owns *definitions* and *decisions*; the host module owns
@@ -13,7 +13,7 @@ WorkflowDefinition ──▶ availableTransitions(def, status, ctx)   → what a
 ## Definition
 
 ```ts
-import { defineWorkflow } from '@kernalo/workflow'
+import { defineWorkflow } from '@kernaio/workflow'
 
 const wf = defineWorkflow({
   id: 'software',
@@ -55,7 +55,7 @@ Rules are referenced by `{ type, config }` and implemented in a `RuleRegistry`:
 | post-function | plans side effects → `Intent[]` (host executes) | `field.set {field,value}`, `assign.to {to: currentUser\|reporter\|unassigned\|user, userId?}`, `resolution.set {value}`, `notify {subjects,template,data?}`, `webhook {url,method,headers?,payload?}`, `subitem.create {title,typeKey?,fields?,assignTo}`, `run.automation {ruleId,input?}` |
 
 ```ts
-import { builtinRegistry, defineCondition } from '@kernalo/workflow'
+import { builtinRegistry, defineCondition } from '@kernaio/workflow'
 const registry = builtinRegistry().register(
   defineCondition({ type: 'issue.hasLabel', label: 'Has label', schema: z.object({ label: z.string() }),
     evaluate: (c, ctx) => (ctx.object.fields.labels as string[]).includes(c.label) }),

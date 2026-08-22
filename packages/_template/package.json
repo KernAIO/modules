@@ -1,5 +1,5 @@
 {
-  "name": "@kernalo/module-template",
+  "name": "@kernaio/module-template",
   "version": "0.1.0",
   "private": true,
   "description": "Template for Kern modules (copy me)",
@@ -33,8 +33,8 @@
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
-    "@kernalo/contracts": "^0.1.0",
-    "@kernalo/kernel": "^0.1.0",
+    "@kernaio/contracts": "^0.1.0",
+    "@kernaio/kernel": "^0.1.0",
     "@orpc/contract": "^1.15.0",
     "@orpc/server": "^1.15.0",
     "drizzle-orm": "^0.45.0",

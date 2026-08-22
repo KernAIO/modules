@@ -1,5 +1,5 @@
 {
-  "name": "@kernalo/workflow",
+  "name": "@kernaio/workflow",
   "version": "0.1.0",
   "description": "Generic workflow / state-machine engine for Kern (statuses, transitions, conditions, validators, post-functions, approvals)",
   "license": "AGPL-3.0-only",
@@ -7,7 +7,7 @@
   "sideEffects": false,
   "repository": {
     "type": "git",
-    "url": "https://github.com/KernALO/modules",
+    "url": "https://github.com/KernAIO/modules",
     "directory": "packages/workflow"
   },
   "publishConfig": {

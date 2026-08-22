@@ -5,7 +5,7 @@ import {
   requires,
   uuidv7,
   workspaceScoped,
-} from '@kernalo/kernel'
+} from '@kernaio/kernel'
 import { implement } from '@orpc/server'
 import { desc, eq } from 'drizzle-orm'
 import { MODULE_ID, templateContract, templateEvents } from '../contract.js'
@@ -13,7 +13,7 @@ import { widgets } from './schema.js'
 
 export { defineModule, defineServerModule }
 
-const os = implement(templateContract).$context<import('@kernalo/kernel').RequestContext>()
+const os = implement(templateContract).$context<import('@kernaio/kernel').RequestContext>()
 
 /** Router implementation for the template contract. */
 export function implement_(kernel: Kernel) {

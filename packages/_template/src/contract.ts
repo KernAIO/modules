@@ -5,7 +5,7 @@ import {
   PageInput,
   page,
   WorkspaceId,
-} from '@kernalo/contracts'
+} from '@kernaio/contracts'
 import { z } from 'zod'
 
 export const MODULE_ID = 'template'
