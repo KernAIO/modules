@@ -1,5 +1,5 @@
 {
-  "name": "@kernaio/workflow",
+  "name": "@kernhq/workflow",
   "version": "0.1.0",
   "description": "Generic workflow / state-machine engine for Kern (statuses, transitions, conditions, validators, post-functions, approvals)",
   "license": "AGPL-3.0-only",

@@ -1,4 +1,4 @@
-import { moduleSchema } from '@kernaio/kernel'
+import { moduleSchema } from '@kernhq/kernel'
 import { sql } from 'drizzle-orm'
 import { index, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 
@@ -13,4 +13,4 @@ export const widgets = schema.table(
   },
   (t) => [index('widgets_ws_idx').on(t.workspaceId, t.createdAt)],
 )
-// NOTE: add RLS in the generated migration: see `rlsPolicySql('mod_template','widgets')` from @kernaio/kernel
+// NOTE: add RLS in the generated migration: see `rlsPolicySql('mod_template','widgets')` from @kernhq/kernel

@@ -1,11 +1,4 @@
-import {
-  baseContract,
-  defineEvent,
-  definePermissions,
-  PageInput,
-  page,
-  WorkspaceId,
-} from '@kernaio/contracts'
+import { baseContract, defineEvent, definePermissions, PageInput, page, WorkspaceId } from '@kernhq/contracts'
 import { z } from 'zod'
 
 export const MODULE_ID = 'template'

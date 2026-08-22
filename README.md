@@ -1,6 +1,6 @@
 # Kern first-party modules
 
-Each package is `@kernaio/module-<id>` and exports three entrypoints:
+Each package is `@kernhq/module-<id>` and exports three entrypoints:
 
 | entry | runs in | contains |
 |---|---|---|

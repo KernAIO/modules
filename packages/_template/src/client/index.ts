@@ -1,4 +1,4 @@
-import { defineClientModule } from '@kernaio/kernel/client'
+import { defineClientModule } from '@kernhq/kernel/client'
 export const templateClient = defineClientModule({
   id: 'template',
   name: 'Template',

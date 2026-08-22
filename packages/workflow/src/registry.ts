@@ -1,3 +1,8 @@
+// biome-ignore-all lint/suspicious/noExplicitAny: this module is a registry of rules whose config and
+// object types differ from one another. `unknown` cannot express that — a config parameter is
+// contravariant, so `ConditionDef<unknown>` would refuse a rule that expects a specific config. Each
+// rule validates its own config with its Zod schema before it runs, which is where the safety comes from.
+
 import type { z } from 'zod'
 import type { Intent, RuleContext, RuleObject, RuleRef, TransitionReason } from './types.js'
 
@@ -39,6 +44,12 @@ export interface PostFunctionDef<TConfig = unknown, TObject extends RuleObject =
   plan: (config: TConfig, ctx: RuleContext<TObject>) => Intent[] | Promise<Intent[]>
 }
 
+/**
+ * A registry holds rules whose config and object types differ from one another. `unknown` cannot
+ * express that: a config parameter is contravariant, so `ConditionDef<unknown>` would refuse a rule
+ * that expects a specific config. Each rule validates its own config with its Zod schema before it
+ * runs, which is where the safety actually comes from.
+ */
 export type RuleDef = ConditionDef<any, any> | ValidatorDef<any, any> | PostFunctionDef<any, any>
 
 export function defineCondition<TConfig, TObject extends RuleObject = RuleObject>(
