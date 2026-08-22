@@ -41,6 +41,7 @@
     "zod": "^4.1.0"
   },
   "devDependencies": {
+    "@kernhq/tsconfig": "^0.1.0",
     "@types/node": "^24.0.0",
     "drizzle-kit": "^0.31.0",
     "typescript": "~5.9.3",
