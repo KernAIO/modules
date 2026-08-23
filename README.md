@@ -1,3 +1,7 @@
+<p align="center">
+<img src="https://raw.githubusercontent.com/KernAIO/kern/main/assets/kern-mark.svg" width="56" alt="">
+</p>
+
 # modules
 
 **The features Kern ships with — each one written the way yours would be.**
