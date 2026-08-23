@@ -4,6 +4,9 @@
     "build": { "dependsOn": ["^build"], "outputs": ["dist/**"] },
     "dev": { "cache": false, "persistent": true },
     "typecheck": { "dependsOn": ["^build"] },
-    "test": { "dependsOn": ["^build"] }
+    "test": {
+      "dependsOn": ["^build"],
+      "env": ["CI", "DATABASE_URL", "NATS_URL", "VALKEY_URL", "SMTP_URL", "KERN_SECRET"]
+    }
   }
 }

@@ -2,6 +2,7 @@ import {
   defineModule,
   defineServerModule,
   type Kernel,
+  packageVersion,
   requires,
   uuidv7,
   workspaceScoped,
@@ -11,7 +12,7 @@ import { desc, eq } from 'drizzle-orm'
 import { MODULE_ID, templateContract, templateEvents } from '../contract.js'
 import { widgets } from './schema.js'
 
-export { defineModule, defineServerModule }
+export { defineModule, defineServerModule, packageVersion }
 
 const os = implement(templateContract).$context<import('@kernhq/kernel').RequestContext>()
 

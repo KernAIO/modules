@@ -75,6 +75,10 @@ Every feature ships as a module: `@kernhq/module-chat`, `-mail`, `-tracker`, plu
   running them, so the bare form fails on boot.
 - The client is published as **source**, not compiled: consumers build the Svelte components with their
   own toolchain, so `tsconfig` excludes `src/client`.
+- **A module's manifest version comes from `packageVersion(import.meta.url)`.** The literal that used
+  to sit in `defineModule` was never bumped by a release: chat shipped as 0.2.0 and told every admin
+  it was 0.1.0, and that literal is what `workspace_modules.installed_version` recorded.
+  `pnpm check:versions` (after `pnpm build`) fails CI if the two ever disagree again.
 - `@kernhq/workflow`'s registry uses `any` deliberately — it holds rules whose config types differ, and
   `unknown` would break variance. The reasoning is at the top of `src/registry.ts`; each rule validates
   its own config with Zod before it runs.
@@ -89,6 +93,15 @@ Every feature ships as a module: `@kernhq/module-chat`, `-mail`, `-tracker`, plu
   umbrella install writes the umbrella's, and this repo's CI installs with `--frozen-lockfile`
   against its own — so the change passes locally and fails in CI with ERR_PNPM_OUTDATED_LOCKFILE.
   Run `pnpm install --lockfile-only` here, in the repo that owns the manifest, and commit the result.
+- **`files` must cover everything `./client` imports, contract source included.** The client ships as
+  source, so a re-export of `../contract.js` from `src/client/index.ts` breaks the consumer unless the
+  contract is in the tarball too. `pnpm check:pack` catches it; nothing else does, because the local
+  workspace resolves the file that the published package omits.
+- **A module's tenant tables carry RLS — unless the rows are the operator's rather than the tenant's.**
+  `mod_billing` is the one case: a console that lists every workspace and jobs that enumerate them
+  cannot run under a policy that returns nothing when `app.workspace_id` is unset. If you make that
+  exception, write the reason at the top of the schema file, and keep the genuinely tenant-owned
+  tables (`invoices`) secured. See `docs/adr/0003` in the `kern` repo.
 - **A fix without a changeset does not ship.** The commit lands, CI goes green, the registry keeps
   the broken version, and the consumer's build still fails against it. If a fix matters to a
   consumer, it needs a changeset in the same commit.

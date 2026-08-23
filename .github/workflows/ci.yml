@@ -40,3 +40,6 @@ jobs:
       - run: pnpm build
       # a module publishes its client as source; make sure the tarball can actually resolve it
       - run: pnpm check:pack
+      # a module's manifest version has to match the package it ships in, or every admin is told
+      # the wrong version of the thing they are running
+      - run: pnpm check:versions
