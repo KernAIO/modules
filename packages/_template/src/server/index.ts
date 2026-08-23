@@ -1,6 +1,6 @@
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { MODULE_ID, templateEvents, templatePermissions } from '../contract.js'
+import { MODULE_ID, templateContract, templateEvents, templatePermissions } from '../contract.js'
 import { defineModule, defineServerModule, implement_, packageVersion } from './_impl.js'
 import { schema } from './schema.js'
 
@@ -14,6 +14,8 @@ export const templateModule = defineServerModule({
     permissions: templatePermissions,
     events: templateEvents,
   }),
+  /** Attached so the developer panel can check the router against what was promised. */
+  contract: templateContract,
   schema,
   migrationsFolder: join(dirname(fileURLToPath(import.meta.url)), '../../migrations'),
   router: implement_,
