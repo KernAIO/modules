@@ -2,6 +2,12 @@
 
 **The features Kern ships with — each one written the way yours would be.**
 
+[![CI](https://img.shields.io/github/actions/workflow/status/KernAIO/modules/ci.yml?branch=main&label=CI&style=flat-square)](https://github.com/KernAIO/modules/actions/workflows/ci.yml)
+[![Licence](https://img.shields.io/badge/licence-AGPL--3.0-blue?style=flat-square)](LICENSE)
+[![Status](https://img.shields.io/badge/status-pre--1.0-orange?style=flat-square)](https://github.com/KernAIO/kern#what-works-today)
+[![Last commit](https://img.shields.io/github/last-commit/KernAIO/modules?style=flat-square)](https://github.com/KernAIO/modules/commits/main)
+[![Website](https://img.shields.io/badge/kernaio.com-1f2328?style=flat-square)](https://kernaio.com)
+
 Every feature in [Kern](https://github.com/KernAIO/kern) is a module. A module owns its own database
 schema, its own API and its own screens. It says what it contributes, and the runtime does the rest.
 
@@ -10,13 +16,13 @@ sits beside these as an equal. A workspace can switch any module off, ours inclu
 
 ## What is here
 
-| Module | What it does | State |
-|---|---|---|
-| `@kernhq/module-tracker` | Issues and projects: list, board, detail, queries, cycles, time tracking | Working |
-| `@kernhq/module-chat` | Channels, direct messages, threads, reactions, presence | Working |
-| `@kernhq/module-mail` | Sending email, providers, templates, delivery log | Working |
-| `@kernhq/workflow` | The state machine the others use for statuses and transitions | Working |
-| `packages/_template` | An empty module to copy | — |
+| Module | What it does | State | Version |
+|---|---|---|---|
+| `@kernhq/module-tracker` | Issues and projects: list, board, detail, queries, cycles, time tracking | Working | [![npm](https://img.shields.io/npm/v/@kernhq/module-tracker?style=flat-square&label=)](https://www.npmjs.com/package/@kernhq/module-tracker) |
+| `@kernhq/module-chat` | Channels, direct messages, threads, reactions, presence | Working | [![npm](https://img.shields.io/npm/v/@kernhq/module-chat?style=flat-square&label=)](https://www.npmjs.com/package/@kernhq/module-chat) |
+| `@kernhq/module-mail` | Sending email, providers, templates, delivery log | Working | [![npm](https://img.shields.io/npm/v/@kernhq/module-mail?style=flat-square&label=)](https://www.npmjs.com/package/@kernhq/module-mail) |
+| `@kernhq/workflow` | The state machine the others use for statuses and transitions | Working | [![npm](https://img.shields.io/npm/v/@kernhq/workflow?style=flat-square&label=)](https://www.npmjs.com/package/@kernhq/workflow) |
+| `packages/_template` | An empty module to copy | — | — |
 
 ## Build a module
 
@@ -78,4 +84,7 @@ your own.
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) and [CLAUDE.md](CLAUDE.md). Licence: [AGPL-3.0](LICENSE).
 
-Website: [kernaio.com](https://kernaio.com).
+---
+
+**Kern** — one place for your team's work: issues, conversations, documents and people.
+Open source, self-hosted. [kernaio.com](https://kernaio.com) · [github.com/KernAIO](https://github.com/KernAIO)
