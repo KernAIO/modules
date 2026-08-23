@@ -77,3 +77,5 @@ your own.
 ## Contributing
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) and [CLAUDE.md](CLAUDE.md). Licence: [AGPL-3.0](LICENSE).
+
+Website: [kernaio.com](https://kernaio.com).
