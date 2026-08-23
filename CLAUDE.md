@@ -105,3 +105,14 @@ Every feature ships as a module: `@kernhq/module-chat`, `-mail`, `-tracker`, plu
 - **A fix without a changeset does not ship.** The commit lands, CI goes green, the registry keeps
   the broken version, and the consumer's build still fails against it. If a fix matters to a
   consumer, it needs a changeset in the same commit.
+- **Start a module with `pnpm new-module <id>`, not `cp -r _template`.** A hand copy has to get four
+  things right that nothing checks: deleting `"private": true` (a private package is skipped
+  silently by changesets — the commit lands, CI is green, nothing publishes), `files` covering
+  everything `./client` imports, the module id agreeing in `MODULE_ID`, `moduleSchema()` and
+  `schemaFilter`, and the version coming from `packageVersion(import.meta.url)`. The generator does
+  all four, and writes the app-side half — permissions, API client and mock — which used to be
+  undocumented hand-work in another repository.
+- **The template's client half is typechecked through `tsconfig.client.json`.** `./client` ships as
+  source, so `tsconfig.json` must not emit it, and for a long time that meant it was not checked at
+  all: `pnpm build` and `pnpm typecheck` both passed over a broken file and only the app found it,
+  one publish later. `typecheck` now runs both configs.

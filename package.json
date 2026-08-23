@@ -17,7 +17,8 @@
     "changeset": "changeset",
     "release": "pnpm build && changeset publish",
     "check:pack": "node scripts/check-published-client.mjs",
-    "check:versions": "node scripts/check-module-versions.mjs"
+    "check:versions": "node scripts/check-module-versions.mjs",
+    "new-module": "node scripts/new-module.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.0",

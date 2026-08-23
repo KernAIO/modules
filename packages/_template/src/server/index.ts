@@ -17,9 +17,13 @@ export const templateModule = defineServerModule({
   schema,
   migrationsFolder: join(dirname(fileURLToPath(import.meta.url)), '../../migrations'),
   router: implement_,
+  /**
+   * What this module reacts to. The pattern may be an exact name, `module.*`, or `*`; handlers are
+   * durable consumers in production, so one that throws is retried rather than lost.
+   */
   subscriptions: {
-    'core.workspace.created': async (e, kernel) => {
-      kernel.log.info({ e: e.name }, 'template saw workspace created')
+    'core.workspace.created': async (event, kernel) => {
+      kernel.log.info({ module: MODULE_ID, event: event.name }, 'a workspace was created')
     },
   },
 })

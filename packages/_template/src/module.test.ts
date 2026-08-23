@@ -1,5 +1,5 @@
 /**
- * The template's own guard rails — copy this file along with the rest of the package.
+ * This module's guard rails. Keep this file: it is what stops the contract and the router drifting.
  *
  * It needs no database and no running service: it walks the contract and the router as data and
  * checks the two things that are easy to forget and impossible for `tsc` to see.
