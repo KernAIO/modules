@@ -30,11 +30,11 @@ importers:
   packages/_template:
     dependencies:
       '@kernhq/contracts':
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^0.2.0
+        version: 0.2.0
       '@kernhq/kernel':
-        specifier: ^0.1.0
-        version: 0.1.1(@types/pg@8.23.1)
+        specifier: ^0.2.0
+        version: 0.2.0(@types/pg@8.23.1)
       '@orpc/contract':
         specifier: ^1.15.0
         version: 1.15.0
@@ -67,11 +67,11 @@ importers:
   packages/billing:
     dependencies:
       '@kernhq/contracts':
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^0.2.0
+        version: 0.2.0
       '@kernhq/kernel':
-        specifier: ^0.1.0
-        version: 0.1.1(@types/pg@8.23.1)
+        specifier: ^0.2.0
+        version: 0.2.0(@types/pg@8.23.1)
       '@kernhq/sdk':
         specifier: ^0.1.0
         version: 0.1.0
@@ -116,11 +116,11 @@ importers:
   packages/chat:
     dependencies:
       '@kernhq/contracts':
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^0.2.0
+        version: 0.2.0
       '@kernhq/kernel':
-        specifier: ^0.1.0
-        version: 0.1.1(@types/pg@8.23.1)
+        specifier: ^0.2.0
+        version: 0.2.0(@types/pg@8.23.1)
       '@kernhq/sdk':
         specifier: ^0.1.0
         version: 0.1.0
@@ -195,11 +195,11 @@ importers:
         specifier: ^3.1116.0
         version: 3.1116.0
       '@kernhq/contracts':
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^0.2.0
+        version: 0.2.0
       '@kernhq/kernel':
-        specifier: ^0.1.0
-        version: 0.1.1(@types/pg@8.23.1)
+        specifier: ^0.2.0
+        version: 0.2.0(@types/pg@8.23.1)
       '@kernhq/sdk':
         specifier: ^0.1.0
         version: 0.1.0
@@ -253,11 +253,11 @@ importers:
   packages/tracker:
     dependencies:
       '@kernhq/contracts':
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^0.2.0
+        version: 0.2.0
       '@kernhq/kernel':
-        specifier: ^0.1.0
-        version: 0.1.1(@types/pg@8.23.1)
+        specifier: ^0.2.0
+        version: 0.2.0(@types/pg@8.23.1)
       '@kernhq/sdk':
         specifier: ^0.1.0
         version: 0.1.0
@@ -1060,8 +1060,11 @@ packages:
   '@kernhq/contracts@0.1.0':
     resolution: {integrity: sha512-uNBHZuBF520DhBLROXUua+0jd22Y886W/VvRNwMk8q/21UNNinQOHNvEGZy+QDN2VylN53/BUcYRu5tkd2jJHg==}
 
-  '@kernhq/kernel@0.1.1':
-    resolution: {integrity: sha512-bzCbUcDM++yIFvOlpq9tK1qfxe28WQgJ+mQh02VDRvf6WAzK03zMWbChLF/AId3HRUTYkbXoDiUKSKQooZJpPA==}
+  '@kernhq/contracts@0.2.0':
+    resolution: {integrity: sha512-5r3AYQ+QKQbhYtssbAzNHabBs5xIq28pfBHLbFBJERdPlV4kOAjP0UxyZndei3sMaqEP/Iq0vP6dm9q7HSHNbQ==}
+
+  '@kernhq/kernel@0.2.0':
+    resolution: {integrity: sha512-gVvOHyNK/5UP8NR7NCyKecFUlwBQ0+DPob6CcA2cy5DmPXf8I0QvN7vT2TOrBLiN8dkF0CLKNYY5AlVMDBQ61w==}
 
   '@kernhq/sdk@0.1.0':
     resolution: {integrity: sha512-0Mk2jfWhqXupHZ7aw1fAO9mmw6T52zxN72MNSJpAcXerwysh8nZLpLrQtNjp9isPVfLBjEtQa+HJGtH/COuNQw==}
@@ -4209,14 +4212,21 @@ snapshots:
     transitivePeerDependencies:
       - '@opentelemetry/api'
 
-  '@kernhq/kernel@0.1.1(@types/pg@8.23.1)':
+  '@kernhq/contracts@0.2.0':
+    dependencies:
+      '@orpc/contract': 1.15.0
+      zod: 4.4.3
+    transitivePeerDependencies:
+      - '@opentelemetry/api'
+
+  '@kernhq/kernel@0.2.0(@types/pg@8.23.1)':
     dependencies:
       '@aws-sdk/client-s3': 3.1115.0
       '@aws-sdk/s3-request-presigner': 3.1115.0
       '@fastify/cors': 11.3.0
       '@fastify/helmet': 13.1.1
       '@fastify/rate-limit': 10.3.0
-      '@kernhq/contracts': 0.1.0
+      '@kernhq/contracts': 0.2.0
       '@orpc/contract': 1.15.0
       '@orpc/openapi': 1.15.0(fastify@5.12.1)
       '@orpc/server': 1.15.0(fastify@5.12.1)
@@ -4230,6 +4240,7 @@ snapshots:
       pg-boss: 12.27.0
       pino: 10.3.1
       pino-pretty: 13.1.3
+      semver: 7.8.5
       zod: 4.4.3
     transitivePeerDependencies:
       - '@aws-sdk/client-rds-data'
