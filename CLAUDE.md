@@ -78,3 +78,17 @@ Every feature ships as a module: `@kernhq/module-chat`, `-mail`, `-tracker`, plu
 - `@kernhq/workflow`'s registry uses `any` deliberately — it holds rules whose config types differ, and
   `unknown` would break variance. The reasoning is at the top of `src/registry.ts`; each rule validates
   its own config with Zod before it runs.
+- **A syntax error in client source breaks the consumer, not this package.** `./client` is published
+  as TypeScript, so nothing here compiles it: `pnpm build` and `pnpm typecheck` both pass while a
+  broken file ships. Only the app finds it, one publish later. Biome's lint does catch it — run it
+  before publishing, and never trust a green build alone for anything under `src/client`.
+- **A path glob inside a block comment ends the comment.** `app/src/lib/modules/*/client.ts` contains
+  `*/`; everything after it becomes code. Biome reports a missing semicolon on the prose, which
+  points at the symptom rather than the cause. Write such a path without the star, or use `//`.
+- **A dependency added from the umbrella workspace does not update this repo's lockfile.** The
+  umbrella install writes the umbrella's, and this repo's CI installs with `--frozen-lockfile`
+  against its own — so the change passes locally and fails in CI with ERR_PNPM_OUTDATED_LOCKFILE.
+  Run `pnpm install --lockfile-only` here, in the repo that owns the manifest, and commit the result.
+- **A fix without a changeset does not ship.** The commit lands, CI goes green, the registry keeps
+  the broken version, and the consumer's build still fails against it. If a fix matters to a
+  consumer, it needs a changeset in the same commit.
