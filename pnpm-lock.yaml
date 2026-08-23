@@ -151,6 +151,9 @@ importers:
       '@kernhq/kernel':
         specifier: ^0.1.0
         version: 0.1.1(@types/pg@8.23.1)
+      '@kernhq/sdk':
+        specifier: ^0.1.0
+        version: 0.1.0
       '@orpc/contract':
         specifier: ^1.15.0
         version: 1.15.0
