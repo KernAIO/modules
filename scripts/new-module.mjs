@@ -10,7 +10,16 @@
  * Inside the umbrella workspace it writes both halves. Standalone — no `app` checkout beside this
  * one — it writes the package and prints exactly what is still missing, rather than pretending.
  */
-import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
+import {
+  cpSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -73,14 +82,29 @@ const walk = (dir) => {
 }
 walk(dest)
 
-// package.json: the two things a hand copy gets wrong
+// package.json: the things a hand copy gets wrong
 const pkgPath = join(dest, 'package.json')
 const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'))
 pkg.name = `@kernhq/module-${id}`
 pkg.version = '0.1.0'
 delete pkg.private // a private package is skipped silently by changesets
 pkg.description = `Kern ${id} module`
+/**
+ * A first-party module is AGPL-3.0-only, and carries no LICENSE file of its own — the repository
+ * root's covers it.
+ *
+ * `_template` is Apache-2.0 because a third party must be able to copy it and keep their module
+ * closed (ADR 0005), and it ships a LICENSE file saying so. Copying the template therefore copies
+ * the wrong licence, which is a copyright statement rather than a typo: an Apache-2.0 first-party
+ * module gives away the copyleft that makes the product's licence mean anything. Nothing checks
+ * this, and it shipped that way once.
+ *
+ * Building something a third-party module must import? Then it belongs in the framework half, and
+ * that decision is `kern-repo`'s, not this script's.
+ */
+pkg.license = 'AGPL-3.0-only'
 writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`)
+rmSync(join(dest, 'LICENSE'), { force: true })
 
 // ---------------------------------------------------------------- the app half
 const app = join(root, '..', 'app')
