@@ -158,9 +158,13 @@ Every feature ships as a module: `@kernhq/module-chat`, `-mail`, `-tracker`, plu
 - **`rankBetween(null, x)` used to loop for ever after five insertions at the front.** An absent
   lower bound was treated as below digit 0, so the midpoint of (nothing, '2') came out as '0' — and
   nothing sorts strictly between `''` and `'0'`, so the next insertion appended digits until the
-  heap gave out. Inside a request handler that is a hang, not an error. Fixed in
-  `packages/quire/src/client/rank.ts`; **`packages/tracker/src/client/rank.ts` and
-  `src/server/rank.ts` still have it**, along with the collation bug above.
+  heap gave out. Fixed in `packages/quire/src/client/rank.ts`; **`packages/tracker/src/client/rank.ts`
+  still has it** — dragging a sixth card to the top of a list hangs the browser tab.
+  `packages/tracker/src/server/rank.ts` is a *separate* implementation and is **not** affected: it
+  recurses on a midpoint and throws `RankError` on a bound ending in `0`. The two disagree on
+  `initialRank` (`U` against `V`) and have never been reconciled — check which one you are looking
+  at before concluding anything about the other. `mock.ts`'s `rankBetweenSafe` try/catches, which
+  helps against the throw and does nothing against the loop.
 - **A fix without a changeset does not ship.** The commit lands, CI goes green, the registry keeps
   the broken version, and the consumer's build still fails against it. If a fix matters to a
   consumer, it needs a changeset in the same commit.
