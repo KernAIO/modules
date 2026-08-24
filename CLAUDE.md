@@ -32,6 +32,14 @@ The repositories are **public**, so every commit is visible the moment it is pus
   they are still working on them; tell them instead, and repair what you broke.
 
 ## Layout & workflow
+- **A successful `git commit` is not evidence of a correct commit.** The index is shared too, so a
+  concurrent `git add`, `git reset` or `git stash` in another session drops what this one staged —
+  between your `git add` and your `git commit`, with no error. The commit gets a sha and exits 0
+  while holding the *old* content of every modified file. That is how `36dbe80` pushed an `hr` that
+  did not build: the new files landed, none of the twelve modifications did, and the deleted
+  `_impl.ts` was still there. Verify the content before pushing, not the status after staging:
+  `git show HEAD:<path> | head`, and `git archive HEAD <dir> | tar -x -C <tmp>` then lint or build
+  *that* for anything substantial. The working tree passing proves nothing about what you push.
 - Umbrella dev workspace: `kern/` with sibling repos cloned under `kern/repos/<name>` (gitignored there). pnpm links all `@kernhq/*` packages via the umbrella workspace.
 - Install dependencies ONLY via `kern/scripts/pnpm-install-locked.sh` (serialises pnpm at the umbrella root).
 - Node 24 (`nvm use 24`), pnpm 10, TypeScript ~5.9, ESM/NodeNext, Biome for lint+format (run `pnpm exec biome check --write <paths>` before committing), Vitest.
