@@ -141,6 +141,18 @@ Every feature ships as a module: `@kernhq/module-chat`, `-mail`, `-tracker`, plu
   and fails when a procedure named in it is not carrying the extra middleware. Order the middlewares
   `workspaceScoped` → `requiresCapability` → `requires`, so a workspace with the module off is
   refused before anything reveals which capabilities the module has.
+- **A text column that carries a sort key needs `COLLATE "C"`.** Fractional-index keys (tracker's
+  `rank`, quire's `position`) are base-62 fractions whose alphabet is ordered by code point, and
+  `ORDER BY` uses the *collation*, not byte order. The dev and production databases are
+  `en_US.UTF-8`, where `'U' < 'c'` is **false** — so three rows created in order come back reversed.
+  drizzle-kit does not carry a collation in its snapshot, so it has to be written into the migration
+  by hand and put back if the migration is ever regenerated.
+- **`rankBetween(null, x)` used to loop for ever after five insertions at the front.** An absent
+  lower bound was treated as below digit 0, so the midpoint of (nothing, '2') came out as '0' — and
+  nothing sorts strictly between `''` and `'0'`, so the next insertion appended digits until the
+  heap gave out. Inside a request handler that is a hang, not an error. Fixed in
+  `packages/quire/src/client/rank.ts`; **`packages/tracker/src/client/rank.ts` and
+  `src/server/rank.ts` still have it**, along with the collation bug above.
 - **A fix without a changeset does not ship.** The commit lands, CI goes green, the registry keeps
   the broken version, and the consumer's build still fails against it. If a fix matters to a
   consumer, it needs a changeset in the same commit.
