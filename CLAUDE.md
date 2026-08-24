@@ -117,6 +117,22 @@ Every feature ships as a module: `@kernhq/module-chat`, `-mail`, `-tracker`, plu
   cannot run under a policy that returns nothing when `app.workspace_id` is unset. If you make that
   exception, write the reason at the top of the schema file, and keep the genuinely tenant-owned
   tables (`invoices`) secured. See `docs/adr/0003` in the `kern` repo.
+- **Capabilities are for a module different customers want *different amounts* of.** A module is
+  all-or-nothing; a capability is the switch below it, declared with `defineCapabilities` in the
+  contract, enforced by `requiresCapability(MODULE_ID, id)` on the server and by `capability:` on a
+  client contribution. It answers **404, not 403** — a permission failure means the surface exists
+  and this person may not have it, which is the wrong sentence for a workspace that never enabled
+  the feature, and it contradicts a shell that has already hidden the navigation. Switching one off
+  must never destroy data: it is a flag in module settings, so anything needing a migration to
+  reverse does not belong behind one. `chat`, `mail`, `tracker` and `billing` deliberately declare
+  none — each is coherent only as a whole, and a capability nobody switches is a switch nobody
+  needs. `_template` declares two so the shape is visible; delete them when you copy it.
+- **A procedure behind a capability needs its own line in `<module>CapabilityProcedures`.** A
+  missing `requiresCapability` is invisible — the procedure compiles, every other test passes, and
+  the only symptom is a workspace calling a feature it switched off. `module.test.ts` reads that map
+  and fails when a procedure named in it is not carrying the extra middleware. Order the middlewares
+  `workspaceScoped` → `requiresCapability` → `requires`, so a workspace with the module off is
+  refused before anything reveals which capabilities the module has.
 - **A fix without a changeset does not ship.** The commit lands, CI goes green, the registry keeps
   the broken version, and the consumer's build still fails against it. If a fix matters to a
   consumer, it needs a changeset in the same commit.

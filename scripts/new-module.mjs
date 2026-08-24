@@ -50,11 +50,14 @@ const rewrite = (file) => {
     .replaceAll('templateContract', `${id}Contract`)
     .replaceAll('templateEvents', `${id}Events`)
     .replaceAll('templatePermissions', `${id}Permissions`)
+    .replaceAll('templateCapabilityProcedures', `${id}CapabilityProcedures`)
+    .replaceAll('templateCapabilities', `${id}Capabilities`)
     .replaceAll('templateModule', `${id}Module`)
     .replaceAll('TemplateContract', `${Pascal}Contract`)
     .replaceAll('TemplateApi', `${Pascal}Api`)
     .replaceAll('createTemplateClient', `create${Pascal}Client`)
     .replaceAll('TEMPLATE_PERMISSIONS', `${id.toUpperCase()}_PERMISSIONS`)
+    .replaceAll('TEMPLATE_CAPABILITIES', `${id.toUpperCase()}_CAPABILITIES`)
     .replaceAll("'template'", `'${id}'`)
     .replaceAll('template.note.', `${id}.note.`)
     .replaceAll('Template', Pascal)
@@ -107,6 +110,24 @@ export type ${Pascal}Permission = keyof typeof ${id.toUpperCase()}_PERMISSIONS
 export function can${Pascal}(permission: ${Pascal}Permission): boolean {
   return session.can(${id.toUpperCase()}_PERMISSIONS[permission])
 }
+
+/**
+ * Sub-features a workspace can switch off inside this module.
+ *
+ * Delete this if your module is all-or-nothing. Where it is not, a client contribution names one
+ * unqualified — \`capability: '${id.toUpperCase()}_CAPABILITIES.archive'\` — and the shell drops the
+ * navigation, widget, command or settings page when the workspace has it off. Nothing is greyed
+ * out: a capability is about whether the workspace has the feature at all, so there is nothing to
+ * explain and nothing to upgrade to.
+ *
+ * These ids must match what the server declares in \`defineCapabilities\`, and what the mock reports
+ * from \`workspaces.modules.list\` — a disagreement is a screen that works in \`dev:mock\` and 404s
+ * against core.
+ */
+export const ${id.toUpperCase()}_CAPABILITIES = {
+  notes: 'notes',
+  archive: 'archive',
+} as const
 `,
   )
 
@@ -161,6 +182,7 @@ interface MockNote {
   title: string
   body: string
   createdAt: string
+  archivedAt: string | null
 }
 
 export function createMock${Pascal}Api() {
@@ -171,6 +193,7 @@ export function createMock${Pascal}Api() {
       title: 'A first note',
       body: 'Everything here comes from src/lib/modules/${id}/mock.ts',
       createdAt: iso(36e5),
+      archivedAt: null,
     },
   ]
 
@@ -187,6 +210,7 @@ export function createMock${Pascal}Api() {
           title,
           body: body ?? '',
           createdAt: new Date().toISOString(),
+          archivedAt: null,
         }
         notes.unshift(note)
         return note
@@ -195,6 +219,13 @@ export function createMock${Pascal}Api() {
         const at = notes.findIndex((n) => n.id === noteId)
         if (at >= 0) notes.splice(at, 1)
         return { ok: true as const }
+      },
+      // behind the \`archive\` capability; the mock does not gate, the server does
+      archive: async ({ noteId, archived }: { noteId: string; archived?: boolean }) => {
+        const note = notes.find((n) => n.id === noteId)
+        if (!note) throw new Error('Note not found')
+        note.archivedAt = archived === false ? null : new Date().toISOString()
+        return note
       },
     },
   }
@@ -210,6 +241,9 @@ console.log(`  1. pnpm install                     (from the umbrella root)`)
 console.log(`  2. rename the Note entity to yours  (contract.ts, schema.ts, _impl.ts, migrations/)`)
 console.log(`  3. pnpm --filter @kernhq/module-${id} db:generate`)
 console.log(`  4. write migrations/0001_rls.sql for every tenant table`)
+console.log(`  4b. keep or delete ${id}Capabilities in contract.ts — most modules are`)
+console.log(`      all-or-nothing and want it gone; declare capabilities only when different`)
+console.log(`      customers want different amounts of the module.`)
 console.log(`  5. host it: add ${id}Module to featureModules in repos/core/src/service.ts`)
 if (wroteApp) {
   console.log(`  6. write the manifest at repos/app/src/lib/modules/${id}/client.ts`)

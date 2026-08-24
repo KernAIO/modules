@@ -7,13 +7,23 @@
  *   1. every procedure the contract promises is actually implemented — a contract entry with no
  *      router entry type-checks perfectly and 404s at runtime;
  *   2. every implemented procedure is behind `workspaceScoped()` *and* a `requires()` — a procedure
- *      that forgets the second one is readable by any member of any workspace with the module on.
+ *      that forgets the second one is readable by any member of any workspace with the module on;
+ *   3. every procedure the contract says belongs to a capability is behind `requiresCapability()` —
+ *      forgetting that one is invisible, because the procedure compiles, the other tests pass, and
+ *      the only symptom is a workspace calling a feature it switched off.
  *
  * Add your module's real tests next to it; this one keeps working as the contract grows.
  */
 import type { Kernel } from '@kernhq/kernel'
 import { describe, expect, it } from 'vitest'
-import { MODULE_ID, templateContract, templateEvents, templatePermissions } from './contract.js'
+import {
+  MODULE_ID,
+  templateCapabilities,
+  templateCapabilityProcedures,
+  templateContract,
+  templateEvents,
+  templatePermissions,
+} from './contract.js'
 import { implement_ } from './server/_impl.js'
 import { templateModule } from './server/index.js'
 
@@ -54,12 +64,38 @@ describe('the contract and the router agree', () => {
   })
 })
 
+/** Procedure names the contract says sit behind some capability. */
+const gated = new Set(Object.values(templateCapabilityProcedures).flat())
+
 describe('every procedure is authorised', () => {
   it('carries both the workspace/module gate and a permission check', () => {
     for (const [name, leaf] of Object.entries(implemented)) {
       // `workspaceScoped(MODULE_ID)` + `requires('<permission>')`
       expect(leaf['~orpc'].middlewares?.length ?? 0, `${name} middlewares`).toBeGreaterThanOrEqual(2)
     }
+  })
+
+  it('puts a third middleware on every procedure that belongs to a capability', () => {
+    // The middlewares are opaque functions, so this counts rather than identifies them: an ungated
+    // procedure carries two, a gated one carries `requiresCapability` as well.
+    for (const name of gated) {
+      const leaf = implemented[name]
+      expect(leaf, `${name} is named in templateCapabilityProcedures but not implemented`).toBeDefined()
+      expect(
+        leaf?.['~orpc'].middlewares?.length ?? 0,
+        `${name} is declared under a capability, so it needs requiresCapability()`,
+      ).toBeGreaterThanOrEqual(3)
+    }
+  })
+
+  it('names only capabilities the module actually declares', () => {
+    const known = new Set(templateCapabilities.map((c) => c.id))
+    for (const id of Object.keys(templateCapabilityProcedures))
+      expect(known.has(id), `templateCapabilityProcedures names unknown capability "${id}"`).toBe(true)
+  })
+
+  it('names only procedures the contract actually has', () => {
+    for (const name of gated) expect(Object.keys(declared)).toContain(name)
   })
 })
 
@@ -73,6 +109,7 @@ describe('the module declares what it uses', () => {
   it('registers those permissions and events on the server module', () => {
     expect(templateModule.definition.id).toBe(MODULE_ID)
     expect(templateModule.definition.permissions).toBe(templatePermissions)
+    expect(templateModule.definition.capabilities).toBe(templateCapabilities)
     expect(templateModule.definition.events).toBe(templateEvents)
     expect(templateModule.router, 'a module with a contract has to mount a router').toBeTypeOf('function')
   })

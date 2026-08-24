@@ -18,7 +18,7 @@ wrote.
 
 | File | What it is |
 |---|---|
-| `src/contract.ts` | Zod models, the oRPC contract, events, permission keys. Imported by both halves, so no Node code. |
+| `src/contract.ts` | Zod models, the oRPC contract, events, permission keys, capabilities. Imported by both halves, so no Node code. |
 | `src/server/schema.ts` | Drizzle tables in `mod_<id>`. |
 | `src/server/_impl.ts` | The router. Separate from `index.ts` so the test can walk it without a kernel. |
 | `src/server/index.ts` | `defineServerModule` — schema, migrations, router, subscriptions. |

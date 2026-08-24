@@ -22,6 +22,11 @@ export const notes = schema.table(
     title: text('title').notNull(),
     body: text('body').notNull().default(''),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    /**
+     * Added by migration 0002, nullable — which is the rule, not a preference. Every migration must
+     * leave the database readable by the image before it, so a rollback does not need a dump.
+     */
+    archivedAt: timestamp('archived_at', { withTimezone: true }),
   },
   (t) => [index('notes_ws_idx').on(t.workspaceId, t.createdAt)],
 )

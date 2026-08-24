@@ -22,10 +22,27 @@ export function createTemplateClient(opts: KernClientOptions): TemplateApi {
   return createModuleClient<TemplateApi>(opts, 'template')
 }
 
-export { MODULE_ID, type Note, templatePermissions } from '../contract.js'
+export {
+  MODULE_ID,
+  type Note,
+  templateCapabilities,
+  templatePermissions,
+} from '../contract.js'
 
 /** The permission keys, so the app gates on a constant rather than a string it retyped. */
 export const TEMPLATE_PERMISSIONS = {
   view: 'template.note.view',
   manage: 'template.note.manage',
+} as const
+
+/**
+ * The capability ids, for the same reason.
+ *
+ * A client contribution names its own module's capability unqualified — `capability: 'archive'` —
+ * because from inside a module there is only one namespace. The shell prefixes it with this
+ * module's id when it builds the workspace's set, which is where several modules' capabilities meet.
+ */
+export const TEMPLATE_CAPABILITIES = {
+  notes: 'notes',
+  archive: 'archive',
 } as const
