@@ -165,6 +165,17 @@ Every feature ships as a module: `@kernhq/module-chat`, `-mail`, `-tracker`, plu
   `initialRank` (`U` against `V`) and have never been reconciled — check which one you are looking
   at before concluding anything about the other. `mock.ts`'s `rankBetweenSafe` try/catches, which
   helps against the throw and does nothing against the loop.
+- **`biome check --write` can leave a file one pass short.** A fix changes the line lengths around
+  it and the formatter would print something different on a second run, so "Fixed 1 file" is not
+  the same as "settled". Run the read-only `biome check` afterwards and confirm it reports nothing;
+  otherwise CI is the thing that tells you.
+- **A module must not depend on another module's migration having run.** `hr` needs `ltree` and
+  `core` creates it, so `hr` migrated fine in a real instance and failed the moment it was booted
+  alone against a scratch database — which is what its own integration test does, and what a
+  service hosting it without `core` would do. Create the extensions your schema needs in your own
+  first migration; `if not exists` makes saying so twice free. Re-add the block after
+  `pnpm db:generate`, which rewrites the file and knows nothing about it — the same way it knows
+  nothing about `CREATE SCHEMA IF NOT EXISTS`.
 - **A fix without a changeset does not ship.** The commit lands, CI goes green, the registry keeps
   the broken version, and the consumer's build still fails against it. If a fix matters to a
   consumer, it needs a changeset in the same commit.
