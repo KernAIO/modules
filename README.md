@@ -7,7 +7,7 @@
 **The features Kern ships with — each one written the way yours would be.**
 
 [![CI](https://img.shields.io/github/actions/workflow/status/KernAIO/modules/ci.yml?branch=main&label=CI&style=flat-square)](https://github.com/KernAIO/modules/actions/workflows/ci.yml)
-[![Licence](https://img.shields.io/badge/licence-AGPL--3.0-blue?style=flat-square)](LICENSE)
+[![Licence](https://img.shields.io/badge/licence-AGPL--3.0%20%2B%20Apache--2.0-blue?style=flat-square)](LICENSE)
 [![Status](https://img.shields.io/badge/status-pre--1.0-orange?style=flat-square)](https://github.com/KernAIO/kern#what-works-today)
 [![Last commit](https://img.shields.io/github/last-commit/KernAIO/modules?style=flat-square)](https://github.com/KernAIO/modules/commits/main)
 [![Website](https://img.shields.io/badge/kernaio.com-1f2328?style=flat-square)](https://kernaio.com)
@@ -86,7 +86,20 @@ your own.
 
 ## Contributing
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) and [CLAUDE.md](CLAUDE.md). Licence: [AGPL-3.0](LICENSE).
+Read [CONTRIBUTING.md](CONTRIBUTING.md) and [CLAUDE.md](CLAUDE.md).
+
+## Licence
+
+This repository is mixed, and the split is deliberate:
+
+- `packages/_template` and `packages/workflow` are **Apache-2.0** — they each carry their own
+  `LICENSE`. The template is what you copy to start a module, so it must not impose a licence on
+  what you build from it.
+- The first-party modules — `tracker`, `chat`, `mail`, `billing` — are **AGPL-3.0-only**, like the
+  rest of the Kern product. See the root [LICENSE](LICENSE).
+
+Your own module is yours: it links only Apache-2.0 packages, so licence it however you like.
+Full map: [LICENSING.md](https://github.com/KernAIO/kern/blob/main/LICENSING.md).
 
 ---
 
