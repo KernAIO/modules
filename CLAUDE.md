@@ -176,6 +176,12 @@ Every feature ships as a module: `@kernhq/module-chat`, `-mail`, `-tracker`, plu
   first migration; `if not exists` makes saying so twice free. Re-add the block after
   `pnpm db:generate`, which rewrites the file and knows nothing about it — the same way it knows
   nothing about `CREATE SCHEMA IF NOT EXISTS`.
+- **Never read a check's verdict through `tail`, `grep` or `head`.** `pnpm lint | tail -2` prints
+  "Checked 212 files… Found 1 warning" and hides the *error* line above it, so a red check reads as
+  green. `cmd | grep x; echo $?` is worse: `$?` is grep's status, not the command's. Both bit two
+  sessions independently on 2026-08-25 — one pushed a lint error to `main`, the other pushed on top
+  of it. Trust only `cmd >/dev/null 2>&1; echo $?`, or read the whole output. The same applies to
+  any pipeline whose exit code you are about to believe.
 - **A fix without a changeset does not ship.** The commit lands, CI goes green, the registry keeps
   the broken version, and the consumer's build still fails against it. If a fix matters to a
   consumer, it needs a changeset in the same commit.
