@@ -1,1 +1,0 @@
-<%= it.items.length %> new notification<%= it.items.length === 1 ? '' : 's' %> in <%= it.workspaceName %>

@@ -1,107 +1,33 @@
-<p align="center">
-<img src="https://raw.githubusercontent.com/KernAIO/kern/main/assets/kern-mark.svg" width="56" alt="">
-</p>
+# Kern modules — moved
 
-# modules
+Every module that lived here now has its own repository, and the shared workflow engine moved into
+the framework. Nothing was lost: each repository carries the history of the package it holds.
 
-**The features Kern ships with — each one written the way yours would be.**
-
-[![CI](https://img.shields.io/github/actions/workflow/status/KernAIO/modules/ci.yml?branch=main&label=CI&style=flat-square)](https://github.com/KernAIO/modules/actions/workflows/ci.yml)
-[![Licence](https://img.shields.io/badge/licence-AGPL--3.0%20%2B%20Apache--2.0-blue?style=flat-square)](LICENSE)
-[![Status](https://img.shields.io/badge/status-pre--1.0-orange?style=flat-square)](https://github.com/KernAIO/kern#what-works-today)
-[![Last commit](https://img.shields.io/github/last-commit/KernAIO/modules?style=flat-square)](https://github.com/KernAIO/modules/commits/main)
-[![Website](https://img.shields.io/badge/kernaio.com-1f2328?style=flat-square)](https://kernaio.com)
-
-Every feature in [Kern](https://github.com/KernAIO/kern) is a module. A module owns its own database
-schema, its own API and its own screens. It says what it contributes, and the runtime does the rest.
-
-Nothing in here uses a private interface. If you can build a module, you can build a feature that
-sits beside these as an equal. A workspace can switch any module off, ours included.
-
-## What is here
-
-| Module | What it does | State | Version |
-|---|---|---|---|
-| `@kernhq/module-tracker` | Issues and projects: list, board, detail, queries, cycles, time tracking | Working | [![npm](https://img.shields.io/npm/v/@kernhq/module-tracker?style=flat-square&label=)](https://www.npmjs.com/package/@kernhq/module-tracker) |
-| `@kernhq/module-chat` | Channels, direct messages, threads, reactions, presence | Working | [![npm](https://img.shields.io/npm/v/@kernhq/module-chat?style=flat-square&label=)](https://www.npmjs.com/package/@kernhq/module-chat) |
-| `@kernhq/module-mail` | Sending email, providers, templates, delivery log | Working | [![npm](https://img.shields.io/npm/v/@kernhq/module-mail?style=flat-square&label=)](https://www.npmjs.com/package/@kernhq/module-mail) |
-| `@kernhq/workflow` | The state machine the others use for statuses and transitions | Working | [![npm](https://img.shields.io/npm/v/@kernhq/workflow?style=flat-square&label=)](https://www.npmjs.com/package/@kernhq/workflow) |
-| `KernAIO/module-template` | An empty module to copy | — | — |
-
-## Build a module
-
-Goal: create a module that Kern serves.
-
-You need:
-
-- Node 24 and pnpm 10.
-
-### 1. Copy the template
-
-```bash
-cp -r KernAIO/module-template packages/my-module
-```
-
-The template brings tests for the two things that are easiest to forget. Every procedure your
-contract promises must exist. Every procedure must sit behind a permission check.
-
-### 2. Write the three entry points
-
-| Entry point | Runs where | Holds |
+| Module | Repository | Package |
 |---|---|---|
-| `./contract` | Everywhere | The shapes: data, API, events, permission keys. No runtime |
-| `./server` | A Kern service | Database schema, migrations, API, jobs, event handlers, search |
-| `./client` | The web app | Screens, navigation, command actions, how your objects are drawn elsewhere |
+| Tracker — projects, work items, cycles | [KernAIO/module-tracker](https://github.com/KernAIO/module-tracker) | `@kernhq/module-tracker` |
+| Chat — channels, threads, DMs | [KernAIO/module-chat](https://github.com/KernAIO/module-chat) | `@kernhq/module-chat` |
+| Quire — spaces, pages, collaborative docs | [KernAIO/module-quire](https://github.com/KernAIO/module-quire) | `@kernhq/module-quire` |
+| HR — people, leave, attendance, approvals | [KernAIO/module-hr](https://github.com/KernAIO/module-hr) | `@kernhq/module-hr` |
+| Mail — workspace email delivery | [KernAIO/module-mail](https://github.com/KernAIO/module-mail) | `@kernhq/module-mail` |
+| Billing — plans, subscriptions, entitlements | [KernAIO/module-billing](https://github.com/KernAIO/module-billing) | `@kernhq/module-billing` |
+| Workflow engine (Apache-2.0, shared) | [KernAIO/kernel](https://github.com/KernAIO/kernel) | `@kernhq/workflow` |
 
-### 3. Check it
+## Writing your own
+
+Start from [**KernAIO/module-template**](https://github.com/KernAIO/module-template). It is
+Apache-2.0 — what you build from it is yours to license however you like — and it is a whole working
+module: contract, server, schema, row-level security, permissions, screens and strings.
 
 ```bash
-pnpm typecheck
-pnpm test
-pnpm check:pack
+npx degit KernAIO/module-template my-module
 ```
 
-**Expected result:** all three report success.
+## Why they are separate
 
-`pnpm check:pack` packs each module and follows every import from its published client entry. A
-module ships part of its client as source, so anything that source imports has to be inside the
-package.
+The modules above are the ones Kern ships with, and they are meant to be read as much as run — each
+one written the way yours would be. A reference implementation that lives somewhere structurally
+special is not a reference. They are the same shape as yours: one package, its own repository, its
+own release.
 
-### 4. Have a service host it
-
-A module that nothing loads is invisible: its tests pass, it publishes, and every call answers 404.
-Add it to `featureModules` in the [core service](https://github.com/KernAIO/core), or to a service of
-your own.
-
-## Rules a module follows
-
-- **A module owns its data.** Its tables live in its own Postgres schema, named `mod_<id>`. Every
-  tenant table carries a `workspace_id` and a row-level security policy.
-- **No module reads another module's tables.** Ask through `kernel.call()`, or listen for an event.
-  There is no join across schemas.
-- **A generated migration must say `CREATE SCHEMA IF NOT EXISTS`.** The runtime creates the schema
-  before running migrations, so the plain form fails at boot.
-- **The client ships as source**, not compiled, so the application builds the components with its own
-  toolchain.
-
-## Contributing
-
-Read [CONTRIBUTING.md](CONTRIBUTING.md) and [CLAUDE.md](CLAUDE.md).
-
-## Licence
-
-This repository is mixed, and the split is deliberate:
-
-- `KernAIO/module-template` and `packages/workflow` are **Apache-2.0** — they each carry their own
-  `LICENSE`. The template is what you copy to start a module, so it must not impose a licence on
-  what you build from it.
-- The first-party modules — `tracker`, `chat`, `mail`, `billing` — are **AGPL-3.0-only**, like the
-  rest of the Kern product. See the root [LICENSE](LICENSE).
-
-Your own module is yours: it links only Apache-2.0 packages, so licence it however you like.
-Full map: [LICENSING.md](https://github.com/KernAIO/kern/blob/main/LICENSING.md).
-
----
-
-**Kern** — one place for your team's work: issues, conversations, documents and people.
-Open source, self-hosted. [kernaio.com](https://kernaio.com) · [github.com/KernAIO](https://github.com/KernAIO)
+See [ADR 0008](https://github.com/KernAIO/kern/blob/main/docs/adr/0008-a-module-ships-its-own-screens.md).

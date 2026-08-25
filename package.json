@@ -8,17 +8,10 @@
     "node": ">=24"
   },
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "biome check .",
     "format": "biome format --write .",
-    "typecheck": "turbo run typecheck",
-    "test": "turbo run test",
     "changeset": "changeset",
     "release": "pnpm build && changeset publish",
-    "check:pack": "node scripts/check-published-client.mjs",
-    "check:versions": "node scripts/check-module-versions.mjs",
-    "new-module": "node scripts/new-module.mjs"
+    "note": "echo \"Every module moved to its own repository \u2014 see README.md\""
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.0",

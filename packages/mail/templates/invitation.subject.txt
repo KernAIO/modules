@@ -1,1 +1,0 @@
-<%= it.inviterName %> invited you to <%= it.workspaceName %> on <%= it.instanceName %>
