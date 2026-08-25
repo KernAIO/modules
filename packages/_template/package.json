@@ -1,7 +1,7 @@
 {
   "name": "@kernhq/module-template",
   "version": "0.2.0",
-  "description": "Apache-2.0 starting point for a Kern module — copy it, or read it as the reference for what a module is",
+  "description": "Apache-2.0 starting point for a Kern module \u2014 copy it, or read it as the reference for what a module is",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -56,7 +56,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
-    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.client.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit && svelte-check --tsconfig ./tsconfig.client.json --threshold error",
     "test": "vitest run",
     "db:generate": "drizzle-kit generate"
   },
@@ -71,9 +71,29 @@
   },
   "devDependencies": {
     "@kernhq/tsconfig": "^0.1.0",
+    "@kernhq/ui": "^0.7.0",
+    "@tanstack/svelte-query": "^6.1.0",
     "@types/node": "^24.0.0",
     "drizzle-kit": "^0.31.0",
+    "svelte": "^5.46.0",
+    "svelte-check": "^4.0.0",
     "typescript": "~5.9.3",
     "vitest": "^4.0.0"
+  },
+  "peerDependencies": {
+    "@kernhq/ui": "^0.7.0",
+    "@tanstack/svelte-query": "^6.1.0",
+    "svelte": "^5.46.0"
+  },
+  "peerDependenciesMeta": {
+    "@kernhq/ui": {
+      "optional": true
+    },
+    "@tanstack/svelte-query": {
+      "optional": true
+    },
+    "svelte": {
+      "optional": true
+    }
   }
 }

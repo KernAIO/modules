@@ -1,14 +1,19 @@
 # Module template
 
-Copy this to start a Kern module. It is a working module: a `Note` entity with list, create and
-delete, its own Postgres schema, row-level security, permissions, events, and a test that refuses to
-let the contract and the router drift apart.
+Copy this to start a Kern module. It is a whole working module: a `Note` entity with list, create
+and delete, its own Postgres schema, row-level security, permissions, events, **its own screens and
+its own strings**, and a test that refuses to let the contract and the router drift apart.
+
+A module is one package. The manifest, the pages, the widgets and the translations all live here —
+the application holds no screens belonging to a module, and deleting this package removes the
+feature completely. That is what makes it possible for somebody outside the Kern organisation to
+ship one: this package is Apache-2.0 and the application is not.
 
 The fastest way to copy it correctly is not to copy it by hand:
 
 ```bash
 cd repos/modules
-pnpm new-module crm          # generates this package *and* its half in the app
+pnpm new-module crm          # generates the whole module
 ```
 
 Read the rest of this file if you are doing it by hand, or if you want to know what the generator
@@ -48,16 +53,38 @@ Each of these has been got wrong before.
 6. **Host it.** A module nothing imports is invisible: its tests pass, it publishes, and every call
    404s. Add it to `featureModules` in the `core` repo's `src/service.ts`, or to whichever service
    should hold it.
-7. **Register the client** in the app's `src/lib/modules/registry.ts`.
+7. **Register the client.** One line in the app's `src/lib/modules/registry.ts`:
+   `registerModule(crmClientModule)`, importing from `@kernhq/module-crm/client`. Together with
+   step 6 that is the only wiring outside this package.
 
 ## What a module can contribute
 
 The server half declares tables, migrations, a router, `procedures` other modules call through
 `kernel.call()`, `jobs`, `subscriptions`, search indexers and lifecycle hooks.
 
-The client half — the manifest in the app — declares `nav`, `commands`, `settingsPages`, `widgets`
-for the dashboard, and `sidebar` for the column beside the rail. Read the `kern-widget` skill before
-writing a widget, and `kern-module` for the whole sequence.
+The client half — `src/client/module.ts` in this package — declares `nav`, `routes`, `commands`,
+`settingsPages`, `widgets` for the dashboard, `sidebar` for the column beside the rail, `presenters`
+for rendering this module's objects inside somebody else's screen, and `messages` for its own
+strings. The shell renders whatever it finds; there are no route files in the application to keep in
+step. Read the `kern-widget` skill before writing a widget, and `kern-module` for the whole sequence.
+
+### What a screen may reach for
+
+A module cannot import the application, so everything it needs from the shell comes from
+`@kernhq/ui`: `session` (who is signed in, what they may do, which capabilities the workspace has),
+`navigation` (where we are, `go`, `describe`), `getHost` (the API origin, whether the mock is
+running), `t` (this module's strings and the shared `common` bundle), the formatters, `realtime`,
+`uploadFile`, `WidgetState`, the design-system components and the charts.
+
+Three things will compile while you are editing inside the app and fail the moment this package is
+built on its own — so they are worth knowing before you write them:
+
+- **`$app/state` and `$app/navigation`** do not exist here. A route component is passed
+  `workspaceId`, `workspaceSlug` and `params`; anything else asks `navigation`.
+- **`$lib/*` and `$msg`** are the application's aliases. Your strings live in `src/client/i18n.ts`.
+- **Importing this package's own barrel** (`./index.js`) from inside it is a cycle. Name the file.
+  The barrel re-exports the manifest, which reaches Svelte — so a pure-function test that goes
+  through it fails with `$state is not defined`.
 
 ## Before you call it done
 
