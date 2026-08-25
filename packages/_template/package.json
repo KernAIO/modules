@@ -1,15 +1,31 @@
 {
   "name": "@kernhq/module-template",
   "version": "0.1.0",
-  "private": true,
-  "description": "Template for Kern modules (copy me)",
+  "description": "Apache-2.0 starting point for a Kern module — copy it, or read it as the reference for what a module is",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KernAIO/modules.git",
+    "directory": "packages/_template"
+  },
+  "homepage": "https://github.com/KernAIO/modules/tree/main/packages/_template#readme",
+  "keywords": [
+    "kern",
+    "kern-module",
+    "template",
+    "starter"
+  ],
   "type": "module",
   "files": [
     "dist",
     "migrations",
-    "src/client",
-    "src/contract.ts"
+    "src",
+    "drizzle.config.ts",
+    "tsconfig.json",
+    "tsconfig.client.json",
+    "vitest.config.ts",
+    "README.md",
+    "LICENSE"
   ],
   "exports": {
     "./contract": {
@@ -33,6 +49,9 @@
       "svelte": "./src/client/*",
       "default": "./src/client/*"
     }
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
