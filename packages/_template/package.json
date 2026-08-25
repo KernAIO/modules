@@ -1,7 +1,7 @@
 {
   "name": "@kernhq/module-template",
-  "version": "0.2.0",
-  "description": "Apache-2.0 starting point for a Kern module \u2014 copy it, or read it as the reference for what a module is",
+  "version": "0.3.0",
+  "description": "Apache-2.0 starting point for a Kern module — copy it, or read it as the reference for what a module is",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
