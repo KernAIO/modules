@@ -35,6 +35,12 @@ jobs:
           if echo "$CHANGED" | grep -qE '^\.changeset/.*\.md$'; then
             echo "Changeset present."; exit 0
           fi
+          # Formatting, comments and test-only edits do change a published file without changing
+          # what it does. Saying so in the commit message is the opt-out — deliberate, and visible
+          # in the history, which a disabled check would not be.
+          if git log --format=%B "$BASE..${{ github.sha }}" | grep -qF '[no changeset]'; then
+            echo "Opted out with [no changeset]."; exit 0
+          fi
           echo "::error::This changes packages/ but adds no changeset, so nothing will publish. Run 'pnpm changeset' and commit the file, or add one under .changeset/ saying which package moved and how far."
           exit 1
 
