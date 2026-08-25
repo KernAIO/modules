@@ -9,7 +9,8 @@ The repositories are **public**, so every commit is visible the moment it is pus
 - Keep commit history clean and meaningful — it is part of what people judge the project by.
 - Every repo carries LICENSE, CLA.md, CODE_OF_CONDUCT.md, SECURITY.md, CONTRIBUTING.md.
 - **Two licences, split at the framework boundary.** The `kernel` repo and `modules`'
-  `_template` + `workflow` are **Apache-2.0** so anyone can write a closed module; the product —
+  `workflow` are **Apache-2.0**, as is `KernAIO/module-template` in its own repository, so anyone
+  can write a closed module; the product —
   `app`, `core`, `chat`, `mail`, `collab`, `docs`, this umbrella, the first-party modules — is
   **AGPL-3.0-only**. A new package inherits its repo's licence unless it is something a third-party
   module must import, and then it is Apache-2.0 with its own LICENSE file. Apache-2.0 packages take
@@ -47,7 +48,7 @@ The repositories are **public**, so every commit is visible the moment it is pus
 - Install dependencies ONLY via `kern/scripts/pnpm-install-locked.sh` (serialises pnpm at the umbrella root).
 - Node 24 (`nvm use 24`), pnpm 10, TypeScript ~5.9, ESM/NodeNext, Biome for lint+format (run `pnpm exec biome check --write <paths>` before committing), Vitest.
 - Contracts first: changes to `@kernhq/contracts` / module contracts land (and build) before their consumers.
-- Modules own their data: Postgres schema `mod_<id>`, `workspace_id` + RLS on every tenant table, cross-module access only via `kernel.call()` and events. See `modules` repo `packages/_template`.
+- Modules own their data: Postgres schema `mod_<id>`, `workspace_id` + RLS on every tenant table, cross-module access only via `kernel.call()` and events. See `KernAIO/module-template`.
 - Ports: app 5173 · core 4000 · chat 4100 · mail 4200 · collab 4300 · docs 4400.
 - Dev DB on this machine: Homebrew Postgres 18 at `localhost:5432` (`kern`/`kern`); the compose Postgres listens on `${KERN_PG_PORT:-5432}` (5433 here).
 
@@ -96,7 +97,8 @@ Keep it specific and short. Delete anything that stops being true — a stale no
 # This repository: modules (first-party feature modules)
 
 Every feature ships as a module: `@kernhq/module-chat`, `-mail`, `-tracker`, plus `@kernhq/workflow`
-(the reusable state machine) and `packages/_template` to copy from.
+(the reusable state machine). The starting point for a new module is the published
+`@kernhq/module-template`, which lives in its own repository.
 
 **Things worth knowing**
 - A module has three entry points: `./contract` (Zod + oRPC, no runtime), `./server`
@@ -145,7 +147,7 @@ Every feature ships as a module: `@kernhq/module-chat`, `-mail`, `-tracker`, plu
   must never destroy data: it is a flag in module settings, so anything needing a migration to
   reverse does not belong behind one. `chat`, `mail`, `tracker` and `billing` deliberately declare
   none — each is coherent only as a whole, and a capability nobody switches is a switch nobody
-  needs. `_template` declares two so the shape is visible; delete them when you copy it.
+  needs. the template declares two so the shape is visible; delete them when you copy it.
 - **A procedure behind a capability needs its own line in `<module>CapabilityProcedures`.** A
   missing `requiresCapability` is invisible — the procedure compiles, every other test passes, and
   the only symptom is a workspace calling a feature it switched off. `module.test.ts` reads that map
@@ -188,7 +190,8 @@ Every feature ships as a module: `@kernhq/module-chat`, `-mail`, `-tracker`, plu
 - **A fix without a changeset does not ship.** The commit lands, CI goes green, the registry keeps
   the broken version, and the consumer's build still fails against it. If a fix matters to a
   consumer, it needs a changeset in the same commit.
-- **Start a module with `pnpm new-module <id>`, not `cp -r _template`.** A hand copy has to get four
+- **Start a module with `pnpm new-module <id>`.** It fetches the published
+  `@kernhq/module-template` rather than copying one kept here, so there is no second copy to drift. A hand copy has to get four
   things right that nothing checks: deleting `"private": true` (a private package is skipped
   silently by changesets — the commit lands, CI is green, nothing publishes), `files` covering
   everything `./client` imports, the module id agreeing in `MODULE_ID`, `moduleSchema()` and

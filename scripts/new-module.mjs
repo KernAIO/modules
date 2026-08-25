@@ -11,7 +11,18 @@
  * The only thing left outside the package is one line registering it: `featureModules` in a host
  * service, and `registerModule` in the app's registry.
  */
-import { cpSync, existsSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
+import { execFileSync } from 'node:child_process'
+import {
+  cpSync,
+  existsSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs'
+import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -36,11 +47,42 @@ if (existsSync(dest)) {
 }
 
 // ---------------------------------------------------------------- the package
-const SKIP = new Set(['node_modules', 'dist', '.turbo'])
-cpSync(join(root, 'packages/_template'), dest, {
-  recursive: true,
-  filter: (src) => !SKIP.has(src.split('/').pop()),
-})
+/**
+ * The template comes from the **published package**, not from a copy in this repository.
+ *
+ * `@kernhq/module-template` lives in its own Apache-2.0 repository (KernAIO/module-template) so that
+ * somebody outside this organisation can start from it without cloning six AGPL modules. Two copies
+ * of a starting point drift, and the one that drifts is always the one nobody is looking at — so
+ * there is one, and this fetches it.
+ *
+ * That also makes `pnpm new-module` and `npx degit KernAIO/module-template` produce the same module,
+ * which is the property the `kern-module` skill promises.
+ */
+const tmp = mkdtempSync(join(tmpdir(), 'kern-template-'))
+try {
+  const packed = execFileSync('npm', ['pack', '@kernhq/module-template', '--pack-destination', tmp], {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'inherit'],
+  })
+    .trim()
+    .split('\n')
+    .pop()
+  // npm tarballs put everything under `package/`
+  execFileSync('tar', ['-xzf', join(tmp, packed), '-C', tmp], { stdio: 'inherit' })
+  const SKIP = new Set(['node_modules', 'dist', '.turbo'])
+  cpSync(join(tmp, 'package'), dest, {
+    recursive: true,
+    filter: (src) => !SKIP.has(src.split('/').pop()),
+  })
+} catch (err) {
+  rmSync(dest, { recursive: true, force: true })
+  console.error('Could not fetch @kernhq/module-template from npm.')
+  console.error('This needs the network. To work offline, clone KernAIO/module-template and copy it.')
+  console.error(err instanceof Error ? err.message : err)
+  process.exit(1)
+} finally {
+  rmSync(tmp, { recursive: true, force: true })
+}
 
 /** `template` is a whole word in these files, so a plain replace is safe and a regex is not needed. */
 const rewrite = (file) => {

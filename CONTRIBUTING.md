@@ -5,7 +5,9 @@ Thanks for your interest in Kern — an open-source, self-hostable all-in-one wo
 ## Ways to contribute
 - **Bugs & ideas** — open an issue with the matching template.
 - **Code** — pick an issue labeled `good first issue` / `help wanted`, or propose something in an issue first for larger changes.
-- **Modules** — Kern is modular; third-party modules follow the same package shape as first-party ones (see the `modules` repo, `packages/_template`).
+- **Modules** — Kern is modular; third-party modules follow the same package shape as first-party ones. Start from
+  [`KernAIO/module-template`](https://github.com/KernAIO/module-template) — it is Apache-2.0, so
+  what you build from it is yours to license however you like.
 - **Docs & translations** — the docs site lives in the `docs` repo; UI translations (en/fa/ar/de and more) live with each package's messages.
 
 ## Development setup

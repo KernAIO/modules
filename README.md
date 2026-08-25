@@ -26,7 +26,7 @@ sits beside these as an equal. A workspace can switch any module off, ours inclu
 | `@kernhq/module-chat` | Channels, direct messages, threads, reactions, presence | Working | [![npm](https://img.shields.io/npm/v/@kernhq/module-chat?style=flat-square&label=)](https://www.npmjs.com/package/@kernhq/module-chat) |
 | `@kernhq/module-mail` | Sending email, providers, templates, delivery log | Working | [![npm](https://img.shields.io/npm/v/@kernhq/module-mail?style=flat-square&label=)](https://www.npmjs.com/package/@kernhq/module-mail) |
 | `@kernhq/workflow` | The state machine the others use for statuses and transitions | Working | [![npm](https://img.shields.io/npm/v/@kernhq/workflow?style=flat-square&label=)](https://www.npmjs.com/package/@kernhq/workflow) |
-| `packages/_template` | An empty module to copy | — | — |
+| `KernAIO/module-template` | An empty module to copy | — | — |
 
 ## Build a module
 
@@ -39,7 +39,7 @@ You need:
 ### 1. Copy the template
 
 ```bash
-cp -r packages/_template packages/my-module
+cp -r KernAIO/module-template packages/my-module
 ```
 
 The template brings tests for the two things that are easiest to forget. Every procedure your
@@ -92,7 +92,7 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) and [CLAUDE.md](CLAUDE.md).
 
 This repository is mixed, and the split is deliberate:
 
-- `packages/_template` and `packages/workflow` are **Apache-2.0** — they each carry their own
+- `KernAIO/module-template` and `packages/workflow` are **Apache-2.0** — they each carry their own
   `LICENSE`. The template is what you copy to start a module, so it must not impose a licence on
   what you build from it.
 - The first-party modules — `tracker`, `chat`, `mail`, `billing` — are **AGPL-3.0-only**, like the

@@ -62,7 +62,7 @@
       }
     },
     {
-      "includes": ["**/*.test.ts", "packages/_template/**"],
+      "includes": ["**/*.test.ts"],
       "linter": {
         "rules": {
           "suspicious": {
