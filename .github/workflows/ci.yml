@@ -8,21 +8,19 @@ concurrency:
 permissions: { contents: read, packages: read }
 jobs:
   changeset:
-    # A published package that moves without a changeset is the quietest failure here: the push is
-    # green, `changeset version` finds nothing to bump, `changeset publish` has nothing new to send,
-    # and the fix simply never leaves this repository. Nothing downstream notices, because from the
-    # outside nothing happened. Fail at the commit that caused it instead.
+    # publish.yml infers a changeset from the commit when none was written, so a missing one is no
+    # longer a silent failure. The exception is a breaking change: whether an exported type changed
+    # shape is not visible in a commit subject, and publishing one as a patch is what a caret range
+    # then installs silently. That call stays with the author, and this is where they find out.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
-      - name: A change under packages/ needs a changeset
+      - name: A breaking change under packages/ needs a changeset
         env:
           BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
         run: |
           set -euo pipefail
-          # The first push to a branch reports an all-zero `before`, and a release commit rewrites
-          # history — in both cases there is no useful range, so there is nothing to judge.
           if [ -z "${BASE:-}" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
             echo "No comparable base commit — skipping."; exit 0
           fi
@@ -30,19 +28,15 @@ jobs:
           if ! echo "$CHANGED" | grep -q '^packages/'; then
             echo "Nothing under packages/ changed."; exit 0
           fi
-          # `changeset version` consumes these files, so a release commit legitimately removes them.
-          # Only their presence in this range matters.
           if echo "$CHANGED" | grep -qE '^\.changeset/.*\.md$'; then
             echo "Changeset present."; exit 0
           fi
-          # Formatting, comments and test-only edits do change a published file without changing
-          # what it does. Saying so in the commit message is the opt-out — deliberate, and visible
-          # in the history, which a disabled check would not be.
-          if git log --format=%B "$BASE..${{ github.sha }}" | grep -qF '[no changeset]'; then
-            echo "Opted out with [no changeset]."; exit 0
+          LOG=$(git log --format=%B "$BASE..${{ github.sha }}")
+          if echo "$LOG" | grep -qE '^[a-z]+(\([^)]*\))?!:' || echo "$LOG" | grep -q 'BREAKING CHANGE'; then
+            echo "::error::This declares a breaking change but carries no changeset. Run 'pnpm changeset' and say which packages break and how — publish.yml will not guess a major bump."
+            exit 1
           fi
-          echo "::error::This changes packages/ but adds no changeset, so nothing will publish. Run 'pnpm changeset' and commit the file, or add one under .changeset/ saying which package moved and how far."
-          exit 1
+          echo "No changeset, no breaking change — publish.yml will infer one from the commit."
 
   check:
     runs-on: ubuntu-latest
